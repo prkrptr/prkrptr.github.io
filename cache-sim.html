@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Cache Simulator</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bungee&display=swap" rel="stylesheet">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="cache-sim-styles.css">
+
+    <script src="cache-sim.js"></script>
+
+</head>
+
+<body>
+    <div class="cache-sim">
+        <div class="header">
+            <div class="title">
+                Cache Simulator
+            </div>
+            <div class="title-2">
+                BLOCK-SET ASSOCIATIVE (MRU)
+            </div>
+        </div>
+    
+        <form class="input">
+
+
+            <div class="inputs">
+
+                <div class="input-box">
+                    <label>Block Size</label>
+                    <input type="text" name="block_size" placeholder="Enter Block Size">
+                    
+                </div>
+    
+                <div class="input-box">
+                    <label>Set Size</label>
+                    <input type="text" name="set_size" placeholder="Enter Set Size">
+                </div>
+
+                
+                <div class="input-box">
+
+                    <div class="radio-btn">
+
+                        <label>
+                            <input type="radio" name="input-mode" id="showRandom">
+                            Random
+                          </label>
+                          <br>
+                          <label>
+                            <input type="radio" name="input-mode" id="showManual">
+                            Manual
+                          </label>
+
+                    </div>
+                    
+                </div>
+
+                <div class="input-box">
+                    <label>Sequence Input</label>
+                    
+                    <textarea id="sequence-input" rows="5" cols="50" placeholder="Enter Sequence Input"></textarea>
+                </div>
+
+
+            </div>
+             
+
+            <div class="inputs">
+
+                <div class="input-box">
+                    <label>Word Size</label>
+                    <input type="text" name="word_size" placeholder="Enter Word Size">
+                </div>
+
+                <div class="input-box">
+                    <label>MM Memory Size</label>
+                    <input type="text" name="mm_memory_size" placeholder="Enter MM Memory Size">
+                </div>
+
+                
+                <div class="radio-btn">
+                    <label>
+                        <input type="radio" name="mm-mode" id="mmWord">
+                        Word
+                      </label>
+                      <br>
+                      <label>
+                        <input type="radio" name="mm-mode" id="mmBlock">
+                        Block
+                      </label>
+
+                </div>
+
+                
+    
+                <div class="input-box">
+                    <label>Cache Memory Size</label>
+                    <input type="text" name="cache_memory_size" placeholder="Enter Cache Memory Size">
+                </div>  
+                
+
+                <div class="radio-btn">
+                    <label>
+                        <input type="radio" name="cm-mode" id="cmWord">
+                        Word
+                      </label>
+                      <br>
+                      <label>
+                        <input type="radio" name="cm-mode" id="cmBlock">
+                        Block
+                      </label>
+
+                </div>
+                
+                
+                
+            </div>
+
+            <div class="inputs make-gitna">
+                
+
+                <div class="input-box">
+                    <button type="submit">Simulate </button>
+                </div>
+
+
+            </div>
+
+
+
+
+
+
+            <div class="output">
+
+                <div class="title-3">
+                    OUTPUT
+                </div>
+                
+                <div class="inputs">
+
+                    <div class="input-box">
+                        <label>Number of Cache Hits</label>
+                        <input type="text" id="cache-hits"  readonly>
+                    </div>
+
+                    <div class="input-box">
+                        <label>Number of Cache Misses</label>
+                        <input type="text" id="cache-misses" readonly>
+                    </div>
+
+                    <div class="input-box">
+                        <label>Miss Penalty</label>
+                        <input type="text" id="miss-penalty" readonly>
+                    </div>
+
+                    <div class="input-box">
+                        <label>Average Memory Access Time</label>
+                        <input type="text" id="average-access"  readonly>
+                    </div>
+
+                </div>
+
+                <div class="inputs">
+
+                    <div class="gitna">
+
+
+                        <div class="input-box">
+                            <label>Snapshot of Cache Memory</label>
+                        
+                            <textarea id="snapshot" rows="10" cols="50" readonly></textarea>
+                        </div>
+    
+                        <div class="input-box">
+                            <label>Total Memory Access Time</label>
+                            <input type="text" id="total-access"  readonly>
+                        </div>
+    
+                        <div class="input-box">
+                            <button type="button" id="export-button">Export </button>
+                        </div>
+
+
+                    </div>
+                
+                </div>
+                
+
+            </div>
+
+
+
+           
+        </form>
+    </div>
+</body>
+</html>
