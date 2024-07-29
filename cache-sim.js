@@ -229,17 +229,33 @@ document.addEventListener('DOMContentLoaded', function() {
         if (this.checked) {
             sequenceInput.disabled = true;
             sequenceInput.value = ''; // Clear the input field
+
+            // Generate a random sequence and display it in the textarea
+            let randomSequence = [];
+            for (let i = 0; i < 12; i++) {
+                randomSequence.push(Math.floor(Math.random() * 100));
+            }
+            sequenceInput.value = randomSequence.join(', ');
         }
     });
 
     manualRadio.addEventListener('change', function() {
         if (this.checked) {
             sequenceInput.disabled = false;
+            sequenceInput.value = ''; // Clear the input field
         }
     });
 
-    // Initial state: random is selected, sequence input is disabled
-    sequenceInput.disabled = randomRadio.checked;
+    // Initial state: random is selected, sequence input is disabled and populated with random values
+    if (randomRadio.checked) {
+        let randomSequence = [];
+        for (let i = 0; i < 12; i++) {
+            randomSequence.push(Math.floor(Math.random() * 100));
+        }
+        sequenceInput.value = randomSequence.join(', ');
+    } else {
+        sequenceInput.disabled = randomRadio.checked;
+    }
 
     form.addEventListener('submit', function(event) {
         event.preventDefault();
@@ -248,15 +264,24 @@ document.addEventListener('DOMContentLoaded', function() {
         const blockSize = Number(blockSizeInput.value);
         const setSize = Number(setSizeInput.value);
         const wordSize = Number(wordSizeInput.value);
+        const cacheMemorySize = Number(cacheMemorySizeInput.value);
+
+        // Check if cache memory size is provided and in word mode
+        if (cacheMemorySize && cmWordMode.checked) {
+            const calculatedCacheSize = blockSize * setSize * wordSize;
+
+            if (calculatedCacheSize !== cacheMemorySize) {
+                alert(`Error: Cache memory size (${cacheMemorySize} words) does not match the product of block size, set size, and word size (${calculatedCacheSize} words). Please adjust the values.`);
+                return;
+            }
+        }
 
         let sequenceArray = [];
         if (manualRadio.checked) {
             sequenceArray = sequenceInput.value.split(/[\s,]+/).map(Number);
         } else {
-            // Generate a random sequence if "Random" is selected
-            for (let i = 0; i < 12; i++) {
-                sequenceArray.push(Math.floor(Math.random() * 100));
-            }
+            // Use the random sequence already displayed in the textarea
+            sequenceArray = sequenceInput.value.split(/[\s,]+/).map(Number);
         }
 
         // Initialize the Cache Simulation
