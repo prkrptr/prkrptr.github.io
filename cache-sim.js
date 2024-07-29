@@ -265,6 +265,38 @@ document.addEventListener('DOMContentLoaded', function() {
         const setSize = Number(setSizeInput.value);
         const wordSize = Number(wordSizeInput.value);
         const cacheMemorySize = Number(cacheMemorySizeInput.value);
+        const mmMemorySize = Number(mmMemorySizeInput.value);
+
+        // Validate that required fields are filled out
+        if (!blockSize || !setSize || !wordSize) {
+            alert("Please ensure that block size, set size, and word size are all filled out.");
+            return;
+        }
+
+        // Validate sequence length against MM Memory Size if word mode is selected
+        let sequenceArray = sequenceInput.value.split(/[\s,]+/).map(Number);
+        if (mmWordMode.checked && sequenceArray.length !== mmMemorySize) {
+            alert(`Error: The number of sequence elements (${sequenceArray.length}) does not match the specified MM Memory Size (${mmMemorySize}).`);
+            return;
+        }
+
+        // Validate number of blocks in sequence against MM Memory Size if block mode is selected
+        if (mmBlockMode.checked) {
+            const numberOfBlocks = Math.ceil(sequenceArray.length / wordSize);
+            if (numberOfBlocks !== mmMemorySize) {
+                alert(`Error: The number of blocks (${numberOfBlocks}) calculated from the sequence does not match the specified MM Memory Size (${mmMemorySize}).`);
+                return;
+            }
+        }
+
+        // Validate cache memory size if block mode is selected for cache memory
+        if (cacheMemorySize && cmBlockMode.checked) {
+            const calculatedCacheBlocks = blockSize * setSize;
+            if (calculatedCacheBlocks !== cacheMemorySize) {
+                alert(`Error: Cache memory size (${cacheMemorySize} blocks) does not match the product of block size (${blockSize}) and set size (${setSize}), which is ${calculatedCacheBlocks} blocks. Please adjust the values.`);
+                return;
+            }
+        }
 
         // Check if cache memory size is provided and in word mode
         if (cacheMemorySize && cmWordMode.checked) {
@@ -276,7 +308,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
 
-        let sequenceArray = [];
         if (manualRadio.checked) {
             sequenceArray = sequenceInput.value.split(/[\s,]+/).map(Number);
         } else {
