@@ -24,7 +24,7 @@ Output:
 2. Cache Miss: 7/12 = 
 3. Miss Penalty: 1ns + 20ns + 1 ns = 22ns
 4. Average Memory Access Time: 0.42 * 1ns + 0.58 * 22ns = 13.25ns
-5. Total Memory Access Time: 5*2*2ns + 7*2*11ns + 7*1ns = 164ns + 7ns = 171ns
+5. Total Memory Access Time: 5*2*1ns + 7*2*11ns + 7*1ns = 164ns + 7ns = 171ns
 6. Snapshot of cache memory:
 | SET | BLOCK 0 | BLOCK 1 |
 |  0  |    0    |    2    |
