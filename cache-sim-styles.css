@@ -172,4 +172,68 @@ button[type="submit"]:hover {
 .make-gitna{
     margin-left: 660px;
 }
+.cache-memory-grid {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    margin-top: 30px;
+    font-family: 'Arial', sans-serif;
+    padding: 20px;
+    border-radius: 10px;
+}
 
+.cache-row {
+    display: flex;
+    align-items: stretch;
+    gap: 10px;
+}
+
+.set-label-block {
+    width: 60px;
+    text-align: center;
+    font-weight: bold;
+    color: #ffffff;
+    background-color: #4a90e2;
+    padding: 10px;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.block-header {
+    width: 120px;
+    text-align: center;
+    font-weight: bold;
+    color: #1a5f7a;
+    background-color: #e0f2fe;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.cache-block {
+    width: 120px;
+    border: 2px solid #86b7fe;
+    border-radius: 5px;
+    padding: 10px;
+    background-color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+}
+
+.sequence-element {
+    border: 1px solid #d1e7dd;
+    padding: 5px;
+    margin-bottom: 5px;
+    background-color: #f0f9ff;
+    text-align: center;
+    border-radius: 3px;
+    font-size: 0.9em;
+    color: #0a3622;
+}
+
+.header-row {
+    margin-bottom: 15px;
+}

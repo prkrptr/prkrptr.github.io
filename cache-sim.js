@@ -287,6 +287,7 @@ document.addEventListener('DOMContentLoaded', function() {
         sequenceInput.disabled = randomRadio.checked;
     }
 
+    // Update the form submission event listener
     form.addEventListener('submit', function(event) {
         event.preventDefault();
 
@@ -363,6 +364,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Update the snapshot area
         document.getElementById('snapshot').value = cacheSimulation.generateSnapshot();
+
+        // Generate and display the cache memory grid
+        generateCacheGrid(cacheSimulation.cacheSets);
     });
 
     document.getElementById('export-button').addEventListener('click', function() {
@@ -401,3 +405,48 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
+function generateCacheGrid(cacheSets) {
+    const gridContainer = document.getElementById('cache-memory-grid');
+    gridContainer.innerHTML = ''; // Clear previous content
+
+    // Create header row for block numbers
+    const headerRow = document.createElement('div');
+    headerRow.className = 'cache-row header-row';
+    headerRow.innerHTML = '<div class="set-label-block">Set</div>'; // Set label header
+
+    const blocksPerSet = cacheSets[0].getBlocks().length;
+    for (let i = 0; i < blocksPerSet; i++) {
+        headerRow.innerHTML += `<div class="block-header">Block ${i}</div>`;
+    }
+    gridContainer.appendChild(headerRow);
+
+    // Create rows for each set
+    cacheSets.forEach((cacheSet, setIndex) => {
+        const setRow = document.createElement('div');
+        setRow.className = 'cache-row';
+
+        // Set label block
+        const setLabelBlock = document.createElement('div');
+        setLabelBlock.className = 'set-label-block';
+        setLabelBlock.textContent = setIndex;
+        setRow.appendChild(setLabelBlock);
+
+        // Blocks in the set
+        cacheSet.getBlocks().forEach((block) => {
+            const blockDiv = document.createElement('div');
+            blockDiv.className = 'cache-block';
+
+            block.getSequences().forEach(seq => {
+                const seqDiv = document.createElement('div');
+                seqDiv.className = 'sequence-element';
+                seqDiv.textContent = seq ? seq.toString() : 'null';
+                blockDiv.appendChild(seqDiv);
+            });
+
+            setRow.appendChild(blockDiv);
+        });
+
+        gridContainer.appendChild(setRow);
+    });
+}
