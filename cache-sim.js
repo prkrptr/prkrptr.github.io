@@ -216,6 +216,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const sequenceInput = document.getElementById('sequence-input');
     const randomRadio = document.getElementById('showRandom');
     const manualRadio = document.getElementById('showManual');
+    const mmMemorySizeInput = document.querySelector('input[name="mm_memory_size"]');
+    const wordSizeInput = document.querySelector('input[name="word_size"]');
+    const cacheMemorySizeInput = document.querySelector('input[name="cache_memory_size"]');
+    const mmWordMode = document.getElementById('mmWord');
+    const mmBlockMode = document.getElementById('mmBlock');
 
     // Input validation for numbers only
     form.querySelectorAll('input[type="text"]').forEach(input => {
@@ -224,18 +229,32 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
+    const generateRandomSequence = (size) => {
+        let randomSequence = [];
+        for (let i = 0; i < size; i++) {
+            randomSequence.push(Math.floor(Math.random() * 100));
+        }
+        sequenceInput.value = randomSequence.join(', ');
+    };
+
+    const updateRandomSequence = () => {
+        const mmMemorySize = Number(mmMemorySizeInput.value);
+        const wordSize = Number(wordSizeInput.value);
+
+        if (mmWordMode.checked) {
+            generateRandomSequence(mmMemorySize);
+        } else if (mmBlockMode.checked) {
+            const sequenceLength = mmMemorySize * wordSize;
+            generateRandomSequence(sequenceLength);
+        }
+    };
+
     // Enable/disable sequence input based on selected mode
     randomRadio.addEventListener('change', function() {
         if (this.checked) {
             sequenceInput.disabled = true;
             sequenceInput.value = ''; // Clear the input field
-
-            // Generate a random sequence and display it in the textarea
-            let randomSequence = [];
-            for (let i = 0; i < 12; i++) {
-                randomSequence.push(Math.floor(Math.random() * 100));
-            }
-            sequenceInput.value = randomSequence.join(', ');
+            updateRandomSequence();
         }
     });
 
@@ -248,11 +267,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Initial state: random is selected, sequence input is disabled and populated with random values
     if (randomRadio.checked) {
-        let randomSequence = [];
-        for (let i = 0; i < 12; i++) {
-            randomSequence.push(Math.floor(Math.random() * 100));
-        }
-        sequenceInput.value = randomSequence.join(', ');
+        updateRandomSequence();
     } else {
         sequenceInput.disabled = randomRadio.checked;
     }
@@ -261,15 +276,15 @@ document.addEventListener('DOMContentLoaded', function() {
         event.preventDefault();
 
         // Get the input values
-        const blockSize = Number(blockSizeInput.value);
-        const setSize = Number(setSizeInput.value);
+        const blockSize = Number(document.querySelector('input[name="block_size"]').value);
+        const setSize = Number(document.querySelector('input[name="set_size"]').value);
         const wordSize = Number(wordSizeInput.value);
         const cacheMemorySize = Number(cacheMemorySizeInput.value);
         const mmMemorySize = Number(mmMemorySizeInput.value);
 
         // Validate that required fields are filled out
-        if (!blockSize || !setSize || !wordSize) {
-            alert("Please ensure that block size, set size, and word size are all filled out.");
+        if (!blockSize || !setSize || !wordSize || !mmMemorySize || !cacheMemorySize) {
+            alert("Please ensure that block size, set size, word size, main memory size, and cache memory size are all filled out.");
             return;
         }
 
@@ -325,23 +340,49 @@ document.addEventListener('DOMContentLoaded', function() {
         const stats = cacheSimulation.printStatistics();
 
         // Update the output fields
-        cacheHitsOutput.value = cacheSimulation.hitCounter;
-        cacheMissesOutput.value = cacheSimulation.missCounter;
-        missPenaltyOutput.value = stats.missPenalty;
-        averageAccessOutput.value = stats.averageAccessTime;
-        totalAccessOutput.value = stats.totalAccessTime;
+        document.getElementById('cache-hits').value = cacheSimulation.hitCounter;
+        document.getElementById('cache-misses').value = cacheSimulation.missCounter;
+        document.getElementById('miss-penalty').value = stats.missPenalty;
+        document.getElementById('average-access').value = stats.averageAccessTime;
+        document.getElementById('total-access').value = stats.totalAccessTime;
 
         // Update the snapshot area
-        snapshotOutput.value = cacheSimulation.generateSnapshot();
+        document.getElementById('snapshot').value = cacheSimulation.generateSnapshot();
     });
 
-    exportButton.addEventListener('click', function() {
-        const snapshotContent = snapshotOutput.value;
+    document.getElementById('export-button').addEventListener('click', function() {
+        const snapshotContent = document.getElementById('snapshot').value;
         const blob = new Blob([snapshotContent], { type: 'text/plain' });
         const anchor = document.createElement('a');
         anchor.href = URL.createObjectURL(blob);
         anchor.download = 'snapshot.txt';
         anchor.click();
         URL.revokeObjectURL(anchor.href);
+    });
+
+    // Update sequence when MM memory size or word size changes
+    mmMemorySizeInput.addEventListener('input', function() {
+        if (randomRadio.checked) {
+            updateRandomSequence();
+        }
+    });
+
+    wordSizeInput.addEventListener('input', function() {
+        if (randomRadio.checked) {
+            updateRandomSequence();
+        }
+    });
+
+    // Update sequence when MM memory mode changes
+    mmWordMode.addEventListener('change', function() {
+        if (randomRadio.checked) {
+            updateRandomSequence();
+        }
+    });
+
+    mmBlockMode.addEventListener('change', function() {
+        if (randomRadio.checked) {
+            updateRandomSequence();
+        }
     });
 });
