@@ -173,7 +173,22 @@ class CacheSimulation {
     }
 
     generateSnapshot() {
-        return this.cacheSets.map((cacheSet, index) => `Cache Set ${index + 1}:\n${cacheSet.toString()}`).join('\n');
+        const stats = this.printStatistics();
+
+        let snapshot = `Cache Snapshot:\n`;
+
+        this.cacheSets.forEach((cacheSet, index) => {
+            snapshot += `Cache Set ${index + 1}:\n${cacheSet.toString()}\n`;
+        });
+
+        snapshot += `\nStatistics:\n`;
+        snapshot += `Number of Cache Hits: ${this.hitCounter}\n`;
+        snapshot += `Number of Cache Misses: ${this.missCounter}\n`;
+        snapshot += `Miss Penalty: ${stats.missPenalty} ns\n`;
+        snapshot += `Average Memory Access Time: ${stats.averageAccessTime} ns\n`;
+        snapshot += `Total Memory Access Time: ${stats.totalAccessTime} ns\n`;
+
+        return snapshot;
     }
 }
 
