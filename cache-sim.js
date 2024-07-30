@@ -84,8 +84,9 @@ class Set {
 }
 
 class CacheSimulation {
-    constructor(setSize, blockSize) {
-        this.cacheSets = Array.from({ length: setSize }, () => new Set(setSize));
+    constructor(cacheMemorySize, setSize, blockSize) {
+        const numberofSets = cacheMemorySize / setSize;
+        this.cacheSets = Array.from({ length: numberofSets }, () => new Set(setSize));
         this.hitCounter = 0;
         this.missCounter = 0;
         this.wordsPerBlock = blockSize;
@@ -278,6 +279,14 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
+        // Validate cache memory size
+        if (cacheMemorySize % setSize !== 0) {
+            alert(`Error: Cache memory size (${cacheMemorySize} blocks) must be divisible by set size (${setSize} blocks).`);
+            return;
+        }
+
+        const numberOfSets = cacheMemorySize / setSize;
+
         // Validate sequence length against MM Memory Size if word mode is selected
         let sequenceArray = sequenceInput.value.split(/[\s,]+/).map(Number);
         let specifiedMMSize = mmMemorySize/blockSize;
@@ -295,14 +304,14 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
 
-        // Validate cache memory size if block mode is selected for cache memory
-        if (cacheMemorySize && cmBlockMode.checked) {
-            const calculatedCacheBlocks = blockSize * setSize;
-            if (calculatedCacheBlocks !== cacheMemorySize) {
-                alert(`Error: Cache memory size (${cacheMemorySize} blocks) does not match the product of block size (${blockSize}) and set size (${setSize}), which is ${calculatedCacheBlocks} blocks. Please adjust the values.`);
-                return;
-            }
-        }
+        // // Validate cache memory size if block mode is selected for cache memory
+        // if (cacheMemorySize && cmBlockMode.checked) {
+        //     const calculatedCacheBlocks = blockSize * setSize;
+        //     if (calculatedCacheBlocks !== cacheMemorySize) {
+        //         alert(`Error: Cache memory size (${cacheMemorySize} blocks) does not match the product of block size (${blockSize}) and set size (${setSize}), which is ${calculatedCacheBlocks} blocks. Please adjust the values.`);
+        //         return;
+        //     }
+        // }
 
         // Check if cache memory size is provided and in word mode
         if (cacheMemorySize && cmWordMode.checked) {
@@ -322,7 +331,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         // Initialize the Cache Simulation
-        const cacheSimulation = new CacheSimulation(setSize, blockSize);
+        const cacheSimulation = new CacheSimulation(cacheMemorySize, setSize, blockSize);
 
         // Distribute the sequence
         cacheSimulation.distributeSequence(sequenceArray);
