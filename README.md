@@ -4,17 +4,26 @@
 ### Cache System Specifications
 
 ---
-- Input: Block size, set size, MM memory size (accept both blocks and words), cache
-  memory size (accept both blocks and words), program flow to be simulated (accept both
-  blocks and words) and other parameters deemed needed.
+- Input:
+- [x] Block size, 
+- [x] set size, 
+- [x] MM memory size (accept both blocks and words), 
+- [x] Cache memory size (accept both blocks and words)
+- [ ] Program flow to be simulated (accept both blocks and words) and other parameters deemed needed.
 
-- Output: number of cache hits, number of cache miss, miss penalty, average memory
-  access time, total memory access time, snapshot of the cache memory. With option to
-  output result in text file.
+- Output:
+- [x] number of cache hits
+- [x] number of cache miss
+- [x] miss penalty
+- [x] average memory
+- [x] access time
+- [x] total memory access time
+- [x]snapshot of the cache memory.
+- [x] With option to output result in text file.
 - 
 
 --- 
-Screenshot of program outputs
+TODO: Screenshot of program outputs
 Testcases that will cover the specifications (Normal, special case, different inputs)
 1st Test case:
 Cache has 4 blocks, set size is 2 blocks, block size is 2 words
