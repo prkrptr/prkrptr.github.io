@@ -270,7 +270,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Get the input values
         const blockSize = Number(document.querySelector('input[name="block_size"]').value);
         const setSize = Number(document.querySelector('input[name="set_size"]').value);
-        const cacheMemorySize = Number(cacheMemorySizeInput.value);
+        let cacheMemorySize = Number(cacheMemorySizeInput.value);
         const mmMemorySize = Number(mmMemorySizeInput.value);
 
         // Validate that required fields are filled out
@@ -280,7 +280,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         // Validate cache memory size
-        if (cacheMemorySize % setSize !== 0) {
+        if (cacheMemorySize % setSize !== 0 && cmBlockMode.checked) {
             alert(`Error: Cache memory size (${cacheMemorySize} blocks) must be divisible by set size (${setSize} blocks).`);
             return;
         }
@@ -315,12 +315,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Check if cache memory size is provided and in word mode
         if (cacheMemorySize && cmWordMode.checked) {
-            const calculatedCacheSize = blockSize * setSize;
+            const calculatedCacheSize = cacheMemorySize / blockSize; // Converts words to blocks
+            // IDK if tama to
 
-            if (calculatedCacheSize !== cacheMemorySize) {
-                alert(`Error: Cache memory size (${cacheMemorySize} words) does not match the product of block size, set size, (${calculatedCacheSize} words). Please adjust the values.`);
+            if (calculatedCacheSize % setSize !== 0) {
+                alert(`Error: Cache memory size (${cacheMemorySize} words) =>  (${calculatedCacheSize} blocks) must be divisible by set size (${setSize} blocks).`);
                 return;
             }
+            cacheMemorySize = calculatedCacheSize;
+            // if (calculatedCacheSize !== cacheMemorySize) {
+            //     alert(`Error: Cache memory size (${cacheMemorySize} words) does not match the product of block size, set size, (${calculatedCacheSize} words). Please adjust the values.`);
+            //     return;
+            // }
         }
 
         if (manualRadio.checked) {
