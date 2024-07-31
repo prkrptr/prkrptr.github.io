@@ -12,9 +12,9 @@
 
 ---
 ### Input:
-- [x] Block size, 
-- [x] set size, 
-- [x] MM memory size (accept both blocks and words), 
+- [x] Block size,
+- [x] set size,
+- [x] MM memory size (accept both blocks and words),
 - [x] Cache memory size (accept both blocks and words)
 - [x] Program flow to be simulated (accept both blocks and words) and other parameters deemed needed.
   - Uses block sequence
@@ -56,7 +56,7 @@ Output:
 Cache has 3 blocks, set size is 3 blocks, block size is 2 words
 Input: 15, 49, 29, 30, 10, 85, 50, 31, 82, 84
 Output:
-1. Cache Hits: 0/10 
+1. Cache Hits: 0/10
 2. Cache Miss: 10/10
 3. Miss Penalty: 1ns + 20ns + 1 ns = 22ns
 4. Average Memory Access Time: 0* 1ns + 1 * 22ns = 22ns
