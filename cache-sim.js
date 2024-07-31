@@ -79,7 +79,11 @@ class Set {
     }
 
     toString() {
-        return this.blocks.map((block, index) => `Block ${index}: ${block.toString()}`).join(', ');
+        return this.blocks.map((block, index) =>
+            `Block ${index}: ${block.getElement() ?
+                `{ Number=${block.getElement().number}, Age=${block.getElement().age} }` :
+                'null'}`
+        ).join(', ');
     }
 }
 
@@ -90,28 +94,36 @@ class CacheSimulation {
         this.hitCounter = 0;
         this.missCounter = 0;
         this.wordsPerBlock = blockSize;
+        this.detailedLog = [];
     }
 
     distributeSequence(sequence) {
         sequence.forEach((number, age) => {
             let element = new SequenceElement(number, age);
-            console.log(`Distributing element ${element}`);
+            this.detailedLog.push(`Processing element ${element} (Age: ${age})`);
 
             let setIndex = number % this.cacheSets.length;
-            console.log(`Element ${number} maps to Set ${setIndex}`);
+            this.detailedLog.push(`Element ${number} maps to Set ${setIndex}`);
 
             let isHit = this.cacheSets[setIndex].addElement(element);
             if (isHit) {
                 this.hitCounter++;
-                console.log(`Hit! Total hits: ${this.hitCounter}`);
+                this.detailedLog.push(`Hit! Total hits: ${this.hitCounter}`);
             } else {
                 this.missCounter++;
-                console.log(`Miss! Total misses: ${this.missCounter}`);
+                this.detailedLog.push(`Miss! Total misses: ${this.missCounter}`);
             }
 
-            console.log('Current state of cache sets:');
-            this.printCache();
+            this.detailedLog.push('Current state of cache:');
+            this.detailedLog.push(this.getCacheState());
+            this.detailedLog.push('-------------------');
         });
+    }
+
+    getCacheState() {
+        return this.cacheSets.map((cacheSet, index) =>
+            `Cache Set ${index}:\n${cacheSet.toString()}`
+        ).join('\n');
     }
 
     printCache() {
@@ -144,17 +156,16 @@ class CacheSimulation {
             totalAccessTime
         };
     }
-
     generateSnapshot() {
         const stats = this.printStatistics();
 
-        let snapshot = `Cache Snapshot:\n`;
+        let snapshot = `Detailed Cache Operations:\n`;
+        snapshot += this.detailedLog.join('\n');
 
-        this.cacheSets.forEach((cacheSet, index) => {
-            snapshot += `Cache Set ${index + 1}:\n${cacheSet.toString()}\n`;
-        });
+        snapshot += `\n\nFinal Cache State:\n`;
+        snapshot += this.getCacheState();
 
-        snapshot += `\nStatistics:\n`;
+        snapshot += `\n\nStatistics:\n`;
         snapshot += `Number of Cache Hits: ${this.hitCounter}\n`;
         snapshot += `Number of Cache Misses: ${this.missCounter}\n`;
         snapshot += `Miss Penalty: ${stats.missPenalty} ns\n`;

@@ -1,6 +1,13 @@
 # Cache simulator (Block-set-associative / MRU
 ### Gomez, Dominic Joel ; Parker, Peter B. ; Togado, Dalrianne Francesca
 ### CSARCH2 - S13
+
+### How to use the program
+1. Open ```cache-sim.html``` 
+2. Input block size, set size, mm memory size, cache memory size, input sequence can be random or manual
+3. After clicking the simulate button, a visual output and the snapshot of cache memory will be displayed ready to be exported.
+
+
 ### Cache System Specifications
 
 ---
@@ -9,7 +16,8 @@
 - [x] set size, 
 - [x] MM memory size (accept both blocks and words), 
 - [x] Cache memory size (accept both blocks and words)
-- [ ] Program flow to be simulated (accept both blocks and words) and other parameters deemed needed.
+- [x] Program flow to be simulated (accept both blocks and words) and other parameters deemed needed.
+  - Uses block sequence
 
 ### Output:
 - [x] number of cache hits
@@ -21,44 +29,46 @@
 - [x] snapshot of the cache memory.
 - [x] With option to output result in text file.
 
-
 --- 
-TODO: Screenshot of program outputs
 Testcases that will cover the specifications (Normal, special case, different inputs)
 1st Test case:
 Cache has 4 blocks, set size is 2 blocks, block size is 2 words
 Input: 1, 7, 5, 0, 2, 1, 5, 6, 5, 2, 2, 0
 Output:
 1. Cache Hits: 5/12 = 0.42
-2. Cache Miss: 7/12 = 
+2. Cache Miss: 7/12 = 0.58
 3. Miss Penalty: 1ns + 20ns + 1 ns = 22ns
 4. Average Memory Access Time: 0.42 * 1ns + 0.58 * 22ns = 13.25ns
 5. Total Memory Access Time: 5*2*1ns + 7*2*11ns + 7*1ns = 164ns + 7ns = 171ns
 6. Snapshot of cache memory:
 
 | SET | BLOCK (0) | BLOCK (1) |
-|-----|----------|-----------|
-| 0   | 0        | 2         |
-| 1   | 1        | 5         |
-- TODO: ADD MORE TEST CASES
+|-----|-----------|-----------|
+| 0   | 0         | 2         |
+| Age | 11        | 10        |
+| 1   | 1         | 5         |
+| Age | 5         | 8         |
+![img_3.png](img_3.png)
+![img_1.png](img_1.png)
+![img_2.png](img_2.png)
+2nd Test Case:
+Cache has 3 blocks, set size is 3 blocks, block size is 2 words
+Input: 15, 49, 29, 30, 10, 85, 50, 31, 82, 84
+Output:
+1. Cache Hits: 0/10 
+2. Cache Miss: 10/10
+3. Miss Penalty: 1ns + 20ns + 1 ns = 22ns
+4. Average Memory Access Time: 0* 1ns + 1 * 22ns = 22ns
+5. Total Memory Access Time: 0*2*1ns + 10*2*11ns + 10*1ns = 230 + 10 = 230 ns
+6. Snapshot of cache memory:
 
-NOTES/ISSUES:
-- can increase block size whenever ( and this increases the miss penalty
-ave and total memo access time) (idk if this is correct or no)
-- When main memory size or cache memory size is in word mode, 
-  - i assumed it had to be converted into blocks so words * (1 block / block size)
-    - kindly confirm
+| SET | BLOCK (0) | BLOCK (1) | BLOCK (3) |
+|-----|-----------|-----------|-----------|
+| 0   | 15        | 49        | 84        |
+| AGE | 0         | 1         | 9         |
+![img_4.png](img_4.png)
 
 
-TODO: Documentation 
-GitHub link of Application Repository (source code, readme file/user’s manual,
-documentation and analysis write-up, short video demonstration).
- Important:
-o Make sure I can access the above links. Otherwise, your score will be 0.0.
-o Readme/Documentation write-up should include screenshot/s of the program output/s (all
-possible test cases that will cover the specifications (normal, special case, different
-inputs, etc.)
 
-    
 
 
