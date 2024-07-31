@@ -3,7 +3,7 @@
 ### CSARCH2 - S13
 
 ### How to use the program
-1. Open ```cache-sim.html``` 
+1. Go to https://prkrptr.github.io/index.html
 2. Input block size, set size, mm memory size, cache memory size, input sequence can be random or manual
 3. After clicking the simulate button, a visual output and the snapshot of cache memory will be displayed ready to be exported.
 
@@ -48,6 +48,7 @@ Output:
 | Age | 11        | 10        |
 | 1   | 1         | 5         |
 | Age | 5         | 8         |
+
 ![img_3.png](img_3.png)
 ![img_1.png](img_1.png)
 ![img_2.png](img_2.png)
@@ -66,6 +67,7 @@ Output:
 |-----|-----------|-----------|-----------|
 | 0   | 15        | 49        | 84        |
 | AGE | 0         | 1         | 9         |
+
 ![img_4.png](img_4.png)
 
 
