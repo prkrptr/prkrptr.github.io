@@ -3,7 +3,7 @@
 ### CSARCH2 - S13
 
 ### How to use the program
-1. Open ```cache-sim.html``` 
+1. Open ```https://prkrptr.github.io/index.html``` 
 2. Input block size, set size, mm memory size, cache memory size, input sequence can be random or manual
 3. After clicking the simulate button, a visual output and the snapshot of cache memory will be displayed ready to be exported.
 
@@ -30,6 +30,18 @@
 - [x] With option to output result in text file.
 
 --- 
+
+### How the Program Works
+1. Input the block size, set size, MM memory size, and cache memory size.
+2. Choose test case sequence input: Random, Manual.
+3. Click the simulate button.
+4. The output will then be displayed.
+
+---
+
+### Detailed Test Case Analysis
+---
+
 Testcases that will cover the specifications (Normal, special case, different inputs)
 1st Test case:
 Cache has 4 blocks, set size is 2 blocks, block size is 2 words
