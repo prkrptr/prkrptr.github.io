@@ -42,8 +42,8 @@
 ### Detailed Test Case Analysis
 ---
 
-Testcases that will cover the specifications (Normal, special case, different inputs)
-1st Test case:
+The test cases will cover the specifications: Normal, Special Case, Different Inputs
+## 1st Test case:
 Cache has 4 blocks, set size is 2 blocks, block size is 2 words
 Input: 1, 7, 5, 0, 2, 1, 5, 6, 5, 2, 2, 0
 Output:
