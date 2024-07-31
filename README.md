@@ -31,13 +31,6 @@
 
 --- 
 
-### How the Program Works
-1. Input the block size, set size, MM memory size, and cache memory size.
-2. Choose test case sequence input: Random, Manual.
-3. Click the simulate button.
-4. The output will then be displayed.
-
----
 
 ### Detailed Test Case Analysis
 ---
