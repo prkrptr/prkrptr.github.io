@@ -14,14 +14,13 @@ class SequenceElement {
 }
 
 class Block {
-    constructor(wordsPerBlock) {
-        this.sequences = new Array(wordsPerBlock).fill(null);
-        this.currentIndex = 0;
+    constructor() {
+        this.element = null;
     }
 
     addElement(element) {
-        if (this.currentIndex < this.sequences.length) {
-            this.sequences[this.currentIndex++] = element;
+        if (this.element === null) {
+            this.element = element;
             console.log(`Added element ${element} to block.`);
             return true;
         } else {
@@ -30,49 +29,34 @@ class Block {
     }
 
     replaceElement(element) {
-        let indexWithHighestAge = -1;
-        let highestAge = -1;
-
-        for (let i = 0; i < this.sequences.length; i++) {
-            if (this.sequences[i] && this.sequences[i].age > highestAge) {
-                highestAge = this.sequences[i].age;
-                indexWithHighestAge = i;
-            }
-        }
-
-        if (indexWithHighestAge !== -1) {
-            console.log(`Replacing element ${this.sequences[indexWithHighestAge]} with ${element}`);
-            this.sequences[indexWithHighestAge] = element;
-            return true;
-        }
-        return false;
+        console.log(`Replacing element ${this.element} with ${element}`);
+        this.element = element;
+        return true;
     }
 
-    getSequences() {
-        return this.sequences;
+    getElement() {
+        return this.element;
     }
 
     toString() {
-        return `[${this.sequences.map(seq => (seq ? `{ Number=${seq.number} }` : 'null')).join(', ')}]`;
+        return this.element ? `{ Number=${this.element.number} }` : 'null';
     }
 }
 
 class Set {
-    constructor(setSize, wordsPerBlock) {
-        this.blocks = Array.from({ length: setSize }, () => new Block(wordsPerBlock));
+    constructor(setSize) {
+        this.blocks = Array.from({ length: setSize }, () => new Block());
     }
 
     addElement(element) {
         console.log(`Attempting to add element ${element} to the set.`);
 
         for (let block of this.blocks) {
-            for (let i = 0; i < block.getSequences().length; i++) {
-                let seq = block.getSequences()[i];
-                if (seq && seq.number === element.number) {
-                    console.log(`Replacing element ${seq} with ${element}`);
-                    block.getSequences()[i] = element;
-                    return true; // Hit
-                }
+            let existingElement = block.getElement();
+            if (existingElement && existingElement.number === element.number) {
+                console.log(`Replacing element ${existingElement} with ${element}`);
+                block.replaceElement(element);
+                return true; // Hit
             }
         }
 
@@ -82,24 +66,12 @@ class Set {
             }
         }
 
-        let blockWithHighestAge = null;
-        let highestAge = -1;
-
-        for (let block of this.blocks) {
-            for (let seq of block.getSequences()) {
-                if (seq && seq.age > highestAge) {
-                    highestAge = seq.age;
-                    blockWithHighestAge = block;
-                }
-            }
-        }
-
-        if (blockWithHighestAge) {
-            blockWithHighestAge.replaceElement(element);
-            return false; // Miss
-        }
-
-        return false; // Should never reach here
+        // If all blocks are full, replace the oldest element
+        let oldestBlock = this.blocks.reduce((oldest, current) =>
+            (current.getElement() && (!oldest.getElement() || current.getElement().age > oldest.getElement().age)) ? current : oldest
+        );
+        oldestBlock.replaceElement(element);
+        return false; // Miss
     }
 
     getBlocks() {
@@ -107,38 +79,51 @@ class Set {
     }
 
     toString() {
-        return this.blocks.map((block, index) => `Block ${index}: ${block.toString()}`).join('\n');
+        return this.blocks.map((block, index) =>
+            `Block ${index}: ${block.getElement() ?
+                `{ Number=${block.getElement().number}, Age=${block.getElement().age} }` :
+                'null'}`
+        ).join(', ');
     }
 }
 
 class CacheSimulation {
-    constructor(numberOfSets, setSize, wordsPerBlock) {
-        this.cacheSets = Array.from({ length: numberOfSets }, () => new Set(setSize, wordsPerBlock));
+    constructor(cacheMemorySize, setSize, blockSize) {
+        const numberofSets = cacheMemorySize / setSize;
+        this.cacheSets = Array.from({ length: numberofSets }, () => new Set(setSize));
         this.hitCounter = 0;
         this.missCounter = 0;
-        this.wordsPerBlock = wordsPerBlock;
+        this.wordsPerBlock = blockSize;
+        this.detailedLog = [];
     }
 
     distributeSequence(sequence) {
         sequence.forEach((number, age) => {
             let element = new SequenceElement(number, age);
-            console.log(`Distributing element ${element}`);
+            this.detailedLog.push(`Processing element ${element} (Age: ${age})`);
 
             let setIndex = number % this.cacheSets.length;
-            console.log(`Element ${number} maps to Set ${setIndex}`);
+            this.detailedLog.push(`Element ${number} maps to Set ${setIndex}`);
 
             let isHit = this.cacheSets[setIndex].addElement(element);
             if (isHit) {
                 this.hitCounter++;
-                console.log(`Hit! Total hits: ${this.hitCounter}`);
+                this.detailedLog.push(`Hit! Total hits: ${this.hitCounter}`);
             } else {
                 this.missCounter++;
-                console.log(`Miss! Total misses: ${this.missCounter}`);
+                this.detailedLog.push(`Miss! Total misses: ${this.missCounter}`);
             }
 
-            console.log('Current state of cache sets:');
-            this.printCache();
+            this.detailedLog.push('Current state of cache:');
+            this.detailedLog.push(this.getCacheState());
+            this.detailedLog.push('-------------------');
         });
+    }
+
+    getCacheState() {
+        return this.cacheSets.map((cacheSet, index) =>
+            `Cache Set ${index}:\n${cacheSet.toString()}`
+        ).join('\n');
     }
 
     printCache() {
@@ -171,17 +156,16 @@ class CacheSimulation {
             totalAccessTime
         };
     }
-
     generateSnapshot() {
         const stats = this.printStatistics();
 
-        let snapshot = `Cache Snapshot:\n`;
+        let snapshot = `Detailed Cache Operations:\n`;
+        snapshot += this.detailedLog.join('\n');
 
-        this.cacheSets.forEach((cacheSet, index) => {
-            snapshot += `Cache Set ${index + 1}:\n${cacheSet.toString()}\n`;
-        });
+        snapshot += `\n\nFinal Cache State:\n`;
+        snapshot += this.getCacheState();
 
-        snapshot += `\nStatistics:\n`;
+        snapshot += `\n\nStatistics:\n`;
         snapshot += `Number of Cache Hits: ${this.hitCounter}\n`;
         snapshot += `Number of Cache Misses: ${this.missCounter}\n`;
         snapshot += `Miss Penalty: ${stats.missPenalty} ns\n`;
@@ -229,11 +213,11 @@ document.querySelector('form').addEventListener('submit', function(event) {
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('cache-sim-form');
     const sequenceInput = document.getElementById('sequence-input');
-    const randomRadio = document.getElementById('showRandom');
-    const manualRadio = document.getElementById('showManual');
+    const randomRadio = document.getElementById('showRandom');  // Input Sequence
+    const manualRadio = document.getElementById('showManual');  // Input Sequence
     const mmMemorySizeInput = document.querySelector('input[name="mm_memory_size"]');
-    const wordSizeInput = document.querySelector('input[name="word_size"]');
     const cacheMemorySizeInput = document.querySelector('input[name="cache_memory_size"]');
+    const blockSizeInput = document.querySelector('input[name="block_size"]');
     const mmWordMode = document.getElementById('mmWord');
     const mmBlockMode = document.getElementById('mmBlock');
 
@@ -254,12 +238,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const updateRandomSequence = () => {
         const mmMemorySize = Number(mmMemorySizeInput.value);
-        const wordSize = Number(wordSizeInput.value);
-
+        const blockSize = Number(blockSizeInput.value);
+        console.log('MM Memory Size:', mmMemorySize);
+        console.log('Block Size:', blockSize);
+        console.log('MM Word Mode:', mmWordMode.checked);
+        console.log('MM Block Mode:', mmBlockMode.checked);
         if (mmWordMode.checked) {
-            generateRandomSequence(mmMemorySize);
+            generateRandomSequence(mmMemorySize/ blockSize);
         } else if (mmBlockMode.checked) {
-            const sequenceLength = mmMemorySize * wordSize;
+            const sequenceLength = mmMemorySize;
             generateRandomSequence(sequenceLength);
         }
     };
@@ -294,49 +281,63 @@ document.addEventListener('DOMContentLoaded', function() {
         // Get the input values
         const blockSize = Number(document.querySelector('input[name="block_size"]').value);
         const setSize = Number(document.querySelector('input[name="set_size"]').value);
-        const wordSize = Number(wordSizeInput.value);
-        const cacheMemorySize = Number(cacheMemorySizeInput.value);
+        let cacheMemorySize = Number(cacheMemorySizeInput.value);
         const mmMemorySize = Number(mmMemorySizeInput.value);
 
         // Validate that required fields are filled out
-        if (!blockSize || !setSize || !wordSize || !mmMemorySize || !cacheMemorySize) {
-            alert("Please ensure that block size, set size, word size, main memory size, and cache memory size are all filled out.");
+        if (!blockSize || !setSize || !mmMemorySize || !cacheMemorySize) {
+            alert("Please ensure that block size, set size, main memory size, and cache memory size are all filled out.");
             return;
         }
 
+        // Validate cache memory size
+        if (cacheMemorySize % setSize !== 0 && cmBlockMode.checked) {
+            alert(`Error: Cache memory size (${cacheMemorySize} blocks) must be divisible by set size (${setSize} blocks).`);
+            return;
+        }
+
+        const numberOfSets = cacheMemorySize / setSize;
+
         // Validate sequence length against MM Memory Size if word mode is selected
         let sequenceArray = sequenceInput.value.split(/[\s,]+/).map(Number);
-        if (mmWordMode.checked && sequenceArray.length !== mmMemorySize) {
-            alert(`Error: The number of sequence elements (${sequenceArray.length}) does not match the specified MM Memory Size (${mmMemorySize}).`);
+        let specifiedMMSize = mmMemorySize/blockSize;
+        if (mmWordMode.checked && sequenceArray.length !== specifiedMMSize) {
+            alert(`Error: The number of sequence elements (${sequenceArray.length}) does not match the specified MM Memory Size (${specifiedMMSize}) word/s.`);
             return;
         }
 
         // Validate number of blocks in sequence against MM Memory Size if block mode is selected
         if (mmBlockMode.checked) {
-            const numberOfBlocks = Math.ceil(sequenceArray.length / wordSize);
+            const numberOfBlocks = Math.ceil(sequenceArray.length);
             if (numberOfBlocks !== mmMemorySize) {
                 alert(`Error: The number of blocks (${numberOfBlocks}) calculated from the sequence does not match the specified MM Memory Size (${mmMemorySize}).`);
                 return;
             }
         }
 
-        // Validate cache memory size if block mode is selected for cache memory
-        if (cacheMemorySize && cmBlockMode.checked) {
-            const calculatedCacheBlocks = blockSize * setSize;
-            if (calculatedCacheBlocks !== cacheMemorySize) {
-                alert(`Error: Cache memory size (${cacheMemorySize} blocks) does not match the product of block size (${blockSize}) and set size (${setSize}), which is ${calculatedCacheBlocks} blocks. Please adjust the values.`);
-                return;
-            }
-        }
+        // // Validate cache memory size if block mode is selected for cache memory
+        // if (cacheMemorySize && cmBlockMode.checked) {
+        //     const calculatedCacheBlocks = blockSize * setSize;
+        //     if (calculatedCacheBlocks !== cacheMemorySize) {
+        //         alert(`Error: Cache memory size (${cacheMemorySize} blocks) does not match the product of block size (${blockSize}) and set size (${setSize}), which is ${calculatedCacheBlocks} blocks. Please adjust the values.`);
+        //         return;
+        //     }
+        // }
 
         // Check if cache memory size is provided and in word mode
         if (cacheMemorySize && cmWordMode.checked) {
-            const calculatedCacheSize = blockSize * setSize * wordSize;
+            const calculatedCacheSize = cacheMemorySize / blockSize; // Converts words to blocks
+            // IDK if tama to
 
-            if (calculatedCacheSize !== cacheMemorySize) {
-                alert(`Error: Cache memory size (${cacheMemorySize} words) does not match the product of block size, set size, and word size (${calculatedCacheSize} words). Please adjust the values.`);
+            if (calculatedCacheSize % setSize !== 0) {
+                alert(`Error: Cache memory size (${cacheMemorySize} words) =>  (${calculatedCacheSize} blocks) must be divisible by set size (${setSize} blocks).`);
                 return;
             }
+            cacheMemorySize = calculatedCacheSize;
+            // if (calculatedCacheSize !== cacheMemorySize) {
+            //     alert(`Error: Cache memory size (${cacheMemorySize} words) does not match the product of block size, set size, (${calculatedCacheSize} words). Please adjust the values.`);
+            //     return;
+            // }
         }
 
         if (manualRadio.checked) {
@@ -347,7 +348,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         // Initialize the Cache Simulation
-        const cacheSimulation = new CacheSimulation(setSize, blockSize, wordSize);
+        const cacheSimulation = new CacheSimulation(cacheMemorySize, setSize, blockSize);
 
         // Distribute the sequence
         cacheSimulation.distributeSequence(sequenceArray);
@@ -385,12 +386,13 @@ document.addEventListener('DOMContentLoaded', function() {
             updateRandomSequence();
         }
     });
-
-    wordSizeInput.addEventListener('input', function() {
+    // Update sequence when MM memory size or word size changes
+    blockSizeInput.addEventListener('input', function() {
         if (randomRadio.checked) {
             updateRandomSequence();
         }
     });
+
 
     // Update sequence when MM memory mode changes
     mmWordMode.addEventListener('change', function() {
@@ -408,12 +410,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function generateCacheGrid(cacheSets) {
     const gridContainer = document.getElementById('cache-memory-grid');
-    gridContainer.innerHTML = ''; // Clear previous content
+    gridContainer.innerHTML = '';
 
-    // Create header row for block numbers
     const headerRow = document.createElement('div');
     headerRow.className = 'cache-row header-row';
-    headerRow.innerHTML = '<div class="set-label-block">Set</div>'; // Set label header
+    headerRow.innerHTML = '<div class="set-label-block">Set</div>';
 
     const blocksPerSet = cacheSets[0].getBlocks().length;
     for (let i = 0; i < blocksPerSet; i++) {
@@ -421,28 +422,21 @@ function generateCacheGrid(cacheSets) {
     }
     gridContainer.appendChild(headerRow);
 
-    // Create rows for each set
     cacheSets.forEach((cacheSet, setIndex) => {
         const setRow = document.createElement('div');
         setRow.className = 'cache-row';
 
-        // Set label block
         const setLabelBlock = document.createElement('div');
         setLabelBlock.className = 'set-label-block';
         setLabelBlock.textContent = setIndex;
         setRow.appendChild(setLabelBlock);
 
-        // Blocks in the set
         cacheSet.getBlocks().forEach((block) => {
             const blockDiv = document.createElement('div');
             blockDiv.className = 'cache-block';
 
-            block.getSequences().forEach(seq => {
-                const seqDiv = document.createElement('div');
-                seqDiv.className = 'sequence-element';
-                seqDiv.textContent = seq ? seq.toString() : 'null';
-                blockDiv.appendChild(seqDiv);
-            });
+            const element = block.getElement();
+            blockDiv.textContent = element ? element.toString() : 'null';
 
             setRow.appendChild(blockDiv);
         });

@@ -133,10 +133,20 @@ button[type="submit"]:hover {
 
 #sequence-input {
     resize: none;
+    font-size: 15px;
+    font-family: "Noto Sans", sans-serif;
+    padding: 10px;
+    font-weight: 500;
+    border-radius: 5px;
 }
 
 #snapshot{
     resize: none;
+    font-size: 15px;
+    font-family: "Noto Sans", sans-serif;
+    padding: 10px;
+    font-weight: 500;
+    border-radius: 5px;
 }
 
 #export-button{
